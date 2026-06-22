@@ -76,4 +76,4 @@ if __name__ == '__main__':
     print("数据库路径:", DB_PATH)
     print("=" * 60)
     
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=5001)
