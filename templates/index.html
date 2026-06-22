@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V3 足球赔率预测系统</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏆 V3 足球赔率预测系统</h1>
+            <p>基于16000+场历史数据的智能预测</p>
+        </header>
+
+        <main>
+            <!-- 赔率输入区 -->
+            <section class="odds-input">
+                <h2>📊 输入赔率数据</h2>
+                
+                <div class="odds-group">
+                    <h3>Bet365 赔率</h3>
+                    <div class="odds-row">
+                        <label>初盘：</label>
+                        <input type="number" id="b365_home_open" step="0.01" placeholder="主胜">
+                        <input type="number" id="b365_draw_open" step="0.01" placeholder="平赔">
+                        <input type="number" id="b365_away_open" step="0.01" placeholder="客胜">
+                    </div>
+                    <div class="odds-row">
+                        <label>临场：</label>
+                        <input type="number" id="b365_home_close" step="0.01" placeholder="主胜">
+                        <input type="number" id="b365_draw_close" step="0.01" placeholder="平赔">
+                        <input type="number" id="b365_away_close" step="0.01" placeholder="客胜">
+                    </div>
+                </div>
+
+                <div class="odds-group">
+                    <h3>William Hill 赔率</h3>
+                    <div class="odds-row">
+                        <label>初盘：</label>
+                        <input type="number" id="wh_home_open" step="0.01" placeholder="主胜">
+                        <input type="number" id="wh_draw_open" step="0.01" placeholder="平赔">
+                        <input type="number" id="wh_away_open" step="0.01" placeholder="客胜">
+                    </div>
+                    <div class="odds-row">
+                        <label>临场：</label>
+                        <input type="number" id="wh_home_close" step="0.01" placeholder="主胜">
+                        <input type="number" id="wh_draw_close" step="0.01" placeholder="平赔">
+                        <input type="number" id="wh_away_close" step="0.01" placeholder="客胜">
+                    </div>
+                </div>
+
+                <div class="odds-group">
+                    <h3>大小球盘口</h3>
+                    <div class="odds-row">
+                        <label>初盘：</label>
+                        <input type="number" id="ou_open" step="0.25" value="2.5" placeholder="盘口">
+                    </div>
+                    <div class="odds-row">
+                        <label>临场：</label>
+                        <input type="number" id="ou_close" step="0.25" value="2.5" placeholder="盘口">
+                    </div>
+                </div>
+
+                <button id="predict-btn" onclick="predict()">🔮 开始预测</button>
+            </section>
+
+            <!-- 预测结果区 -->
+            <section class="result" id="result-section" style="display: none;">
+                <h2>📈 预测结果</h2>
+                <div id="result-content"></div>
+            </section>
+        </main>
+
+        <footer>
+            <p>数据来源：五大联赛历史赔率 | 模型版本：V3.0</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

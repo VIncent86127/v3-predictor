@@ -1,0 +1,248 @@
+/* V3 预测系统样式 */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 40px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+
+header p {
+    font-size: 1.1em;
+    opacity: 0.9;
+}
+
+main {
+    padding: 40px;
+}
+
+/* 赔率输入区 */
+.odds-input {
+    margin-bottom: 40px;
+}
+
+.odds-input h2 {
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.odds-group {
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.odds-group h3 {
+    font-size: 1.2em;
+    margin-bottom: 15px;
+    color: #555;
+}
+
+.odds-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.odds-row label {
+    width: 60px;
+    font-weight: bold;
+    color: #666;
+}
+
+.odds-row input {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1em;
+    transition: border-color 0.3s;
+}
+
+.odds-row input:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+#predict-btn {
+    width: 100%;
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 15px;
+    font-size: 1.3em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+#predict-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+}
+
+/* 预测结果区 */
+.result {
+    margin-top: 40px;
+}
+
+.result h2 {
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.result-box {
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 20px;
+}
+
+.result-box h3 {
+    font-size: 1.3em;
+    margin-bottom: 15px;
+    color: #555;
+}
+
+.result-box table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.result-box th,
+.result-box td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.result-box th {
+    background: #667eea;
+    color: white;
+}
+
+.result-box tr:hover {
+    background: #f0f0f0;
+}
+
+.final-prediction {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-align: center;
+    padding: 30px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+}
+
+.final-prediction h3 {
+    font-size: 2em;
+    margin-bottom: 15px;
+}
+
+.final-prediction .confidence {
+    font-size: 3em;
+    font-weight: bold;
+}
+
+.final-prediction .prediction-text {
+    font-size: 1.5em;
+    margin-top: 10px;
+}
+
+.risk-warning {
+    background: #fff3cd;
+    border: 2px solid #ffc107;
+    border-radius: 10px;
+    padding: 15px;
+    margin-top: 20px;
+}
+
+.risk-warning h4 {
+    color: #856404;
+    margin-bottom: 10px;
+}
+
+.risk-warning ul {
+    margin-left: 20px;
+}
+
+.risk-warning li {
+    color: #856404;
+    margin-bottom: 5px;
+}
+
+footer {
+    background: #f8f9fa;
+    padding: 20px;
+    text-align: center;
+    color: #666;
+    border-top: 1px solid #e0e0e0;
+}
+
+/* 加载动画 */
+.loading {
+    text-align: center;
+    padding: 40px;
+}
+
+.spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #667eea;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 1.8em;
+    }
+
+    .odds-row {
+        flex-direction: column;
+    }
+
+    .odds-row input {
+        width: 100%;
+    }
+}
