@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V3预测系统 - 独立版</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f5f5f5; }
+        .risk-high { color: #dc3545; font-weight: bold; }
+        .risk-medium { color: #ffc107; font-weight: bold; }
+        .risk-low { color: #28a745; font-weight: bold; }
+        .fire-3 { color: #ff6b6b; font-weight: bold; font-size: 1.1em; }
+        .fire-2 { color: #ffa500; font-weight: bold; }
+        .warning-badge { 
+            background-color: #dc3545; 
+            color: white; 
+            padding: 2px 8px; 
+            border-radius: 4px; 
+            font-size: 0.9em;
+        }
+        .leverge-warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+        .card { box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .card-header { font-weight: bold; }
+        .table td, .table th { vertical-align: middle; }
+        .api-status {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .api-connected { background-color: #d4edda; border: 1px solid #28a745; }
+        .api-disconnected { background-color: #f8d7da; border: 1px solid #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="text-center mb-4">
+            <h1>⚽ V3预测系统 - 独立版 🔥</h1>
+            <p class="text-muted">杠杆率预警 | 双机构一致性评级 | 完整V3分析</p>
+        </div>
+        
+        <!-- API状态 -->
+        <div id="apiStatus" class="api-status">
+            <span id="apiStatusText">正在检查API连接...</span>
+        </div>
+        
+        <!-- 赔率输入 -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">📊 赔率输入</h5>
+            </div>
+            <div class="card-body">
+                <form id="oddsForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-primary">Bet365</h6>
+                            <div class="row mb-2">
+                                <div class="col-4">
+                                    <label class="form-label small">初盘-主胜</label>
+                                    <input type="number" class="form-control form-control-sm" id="b365_home_open" step="0.01" value="1.44">
+                                </div>
+                                <div class="col-4">
+                                    <label class="form-label small">初盘-平赔</label>
+                                    <input type="number" class="form-control form-control-sm" id="b365_draw_open" step="0.01" value="4.33">
+                                </div>
+                                <div class="col-4">
+                                    <label class="form-label small">初盘-客胜</label>
+                                    <input type="number" class="form-control form-control-sm" id="b365_away_open" step="0.01" value="7.50">
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-4">
+                                    <label class="form-label small">临场-主胜</label>
+                                    <input type="number" class="form-control form-control-sm" id="b365_home_close" step="0.01" value="1.44">
+                                </div>
+                                <div class="col-4">
+                                    <label class="form-label small">临场-平赔</label>
+                                    <input type="number" class="form-control form-control-sm" id="b365_draw_close" step="0.01" value="4.33">
+                                </div>
+                                <div class="col-4">
+                                    <label class="form-label small">临场-客胜</label>
+                                    <input type="number" class="form-control form-control-sm" id="b365_away_close" step="0.01" value="7.50">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-success">William Hill</h6>
+                            <div class="row mb-2">
+                                <div class="col-4">
+                                    <label class="form-label small">初盘-主胜</label>
+                                    <input type="number" class="form-control form-control-sm" id="wh_home_open" step="0.01" value="1.44">
+                                </div>
+                                <div class="col-4">
+                                    <label class="form-label small">初盘-平赔</label>
+                                    <input type="number" class="form-control form-control-sm" id="wh_draw_open" step="0.01" value="4.20">
+                                </div>
+                                <div class="col-4">
+                                    <label class="form-label small">初盘-客胜</label>
+                                    <input type="number" class="form-control form-control-sm" id="wh_away_open" step="0.01" value="7.00">
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-4">
+                                    <label class="form-label small">临场-主胜</label>
+                                    <input type="number" class="form-control form-control-sm" id="wh_home_close" step="0.01" value="1.44">
+                                </div>
+                                <div class="col-4">
+                                    <label class="form-label small">临场-平赔</label>
+                                    <input type="number" class="form-control form-control-sm" id="wh_draw_close" step="0.01" value="4.20">
+                                </div>
+                                <div class="col-4">
+                                    <label class="form-label small">临场-客胜</label>
+                                    <input type="number" class="form-control form-control-sm" id="wh_away_close" step="0.01" value="7.00">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-6">
+                                    <label class="form-label small">大小球初盘</label>
+                                    <input type="number" class="form-control form-control-sm" id="ou_open" step="0.25" value="2.5">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label small">大小球临场</label>
+                                    <input type="number" class="form-control form-control-sm" id="ou_close" step="0.25" value="2.5">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <button type="submit" class="btn btn-primary btn-lg mt-4">
+                                🎯 开始预测
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- 结果显示 -->
+        <div id="resultSection" style="display: none;">
+            
+            <!-- 风险评估 -->
+            <div class="card mb-4" id="riskCard">
+                <div class="card-header bg-warning">
+                    <h5 class="mb-0">⚠️ 风险评估（新增）</h5>
+                </div>
+                <div class="card-body" id="riskBody">
+                </div>
+            </div>
+            
+            <!-- 最终预测 -->
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">🎯 最终预测</h5>
+                </div>
+                <div class="card-body" id="finalBody">
+                </div>
+            </div>
+            
+            <!-- 步骤1 -->
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">步骤1：初盘+临场完全匹配</h5>
+                </div>
+                <div class="card-body" id="step1Body">
+                </div>
+            </div>
+            
+            <!-- 步骤2 -->
+            <div class="card mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">步骤2：相似度分析（5分组）</h5>
+                </div>
+                <div class="card-body" id="step2Body">
+                </div>
+            </div>
+            
+            <!-- 步骤4 -->
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">步骤4：杠杆率分析</h5>
+                </div>
+                <div class="card-body" id="step4Body">
+                </div>
+            </div>
+            
+            <!-- 步骤6 -->
+            <div class="card mb-4">
+                <div class="card-header bg-warning">
+                    <h5 class="mb-0">步骤6：爆冷规律分析</h5>
+                </div>
+                <div class="card-body" id="step6Body">
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center text-muted mt-4 mb-4">
+            <p>V3预测系统 v2.0.0 | <a href="https://github.com/VIncent86127/v3-predictor" target="_blank">GitHub</a></p>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // API地址
+        const API_URL = 'http://localhost:5001';
+        
+        // 页面加载时检查API连接
+        window.onload = async function() {
+            await checkAPI();
+        };
+        
+        // 检查API连接
+        async function checkAPI() {
+            const statusDiv = document.getElementById('apiStatus');
+            const statusText = document.getElementById('apiStatusText');
+            
+            try {
+                const response = await fetch(API_URL + '/health', {
+                    method: 'GET',
+                    mode: 'cors'
+                });
+                
+                if (response.ok) {
+                    statusDiv.className = 'api-status api-connected';
+                    statusText.innerHTML = '✅ API已连接 - ' + API_URL;
+                } else {
+                    throw new Error('API响应错误');
+                }
+            } catch (error) {
+                statusDiv.className = 'api-status api-disconnected';
+                statusText.innerHTML = '❌ API未连接 - 请先启动服务器：<br>' +
+                    '<code>cd /home/ubuntu/.openclaw/workspace/v3-predictor && ./start.sh</code>';
+            }
+        }
+        
+        // 表单提交
+        document.getElementById('oddsForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const data = {
+                b365_home_open: parseFloat(document.getElementById('b365_home_open').value),
+                b365_draw_open: parseFloat(document.getElementById('b365_draw_open').value),
+                b365_away_open: parseFloat(document.getElementById('b365_away_open').value),
+                b365_home_close: parseFloat(document.getElementById('b365_home_close').value),
+                b365_draw_close: parseFloat(document.getElementById('b365_draw_close').value),
+                b365_away_close: parseFloat(document.getElementById('b365_away_close').value),
+                wh_home_open: parseFloat(document.getElementById('wh_home_open').value),
+                wh_draw_open: parseFloat(document.getElementById('wh_draw_open').value),
+                wh_away_open: parseFloat(document.getElementById('wh_away_open').value),
+                wh_home_close: parseFloat(document.getElementById('wh_home_close').value),
+                wh_draw_close: parseFloat(document.getElementById('wh_draw_close').value),
+                wh_away_close: parseFloat(document.getElementById('wh_away_close').value),
+                ou_open: parseFloat(document.getElementById('ou_open').value),
+                ou_close: parseFloat(document.getElementById('ou_close').value)
+            };
+            
+            try {
+                const response = await fetch(API_URL + '/predict', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayResult(result.result);
+                } else {
+                    alert('❌ 预测失败: ' + result.error);
+                }
+            } catch (error) {
+                alert('❌ 无法连接API，请确保服务器已启动\n\n启动命令：\ncd /home/ubuntu/.openclaw/workspace/v3-predictor\n./start.sh');
+            }
+        });
+        
+        // 显示结果
+        function displayResult(data) {
+            document.getElementById('resultSection').style.display = 'block';
+            displayRisk(data.risk_assessment);
+            displayFinal(data.final);
+            displayStep1(data.step1);
+            displayStep2(data.step2);
+            displayStep4(data.step4);
+            displayStep6(data.step6);
+            
+            // 滚动到结果区域
+            document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // 显示风险评估
+        function displayRisk(risk) {
+            let html = '<div class="row">';
+            html += '<div class="col-md-6">';
+            html += '<h6>📈 杠杆率分析</h6>';
+            html += '<table class="table table-sm">';
+            html += '<tr><td>B365杠杆率</td><td><strong>' + risk.b365_leverage.toFixed(2) + '</strong>';
+            if (risk.b365_leverage >= 3.0) {
+                html += ' <span class="warning-badge">高风险</span>';
+            }
+            html += '</td></tr>';
+            html += '<tr><td>WH杠杆率</td><td><strong>' + risk.wh_leverage.toFixed(2) + '</strong>';
+            if (risk.wh_leverage >= 3.0) {
+                html += ' <span class="warning-badge">高风险</span>';
+            }
+            html += '</td></tr>';
+            html += '<tr><td>杠杆率差异</td><td>' + risk.leverage_diff.toFixed(2) + '</td></tr>';
+            html += '</table>';
+            html += '</div>';
+            
+            html += '<div class="col-md-6">';
+            html += '<h6>🎯 双机构一致性</h6>';
+            html += '<table class="table table-sm">';
+            html += '<tr><td>临场主胜差异</td><td>' + risk.home_odds_diff.toFixed(2) + '</td></tr>';
+            html += '<tr><td>一致性评级</td><td><strong>' + risk.consistency_rating + '</strong></td></tr>';
+            html += '<tr><td>风险级别</td><td><strong class="risk-' + risk.risk_level + '">' + risk.risk_level.toUpperCase() + '</strong></td></tr>';
+            html += '</table>';
+            html += '</div>';
+            html += '</div>';
+            
+            if (risk.warnings.length > 0) {
+                html += '<div class="leverge-warning mt-3">';
+                html += '<h6>⚠️ 预警信息</h6>';
+                for (const w of risk.warnings) {
+                    html += '<p class="risk-' + w.severity + '">• ' + w.message + '</p>';
+                }
+                html += '</div>';
+            }
+            
+            document.getElementById('riskBody').innerHTML = html;
+            
+            // 更新卡片颜色
+            const riskCard = document.getElementById('riskCard');
+            if (risk.risk_level === 'high') {
+                riskCard.querySelector('.card-header').className = 'card-header bg-danger text-white';
+            } else if (risk.risk_level === 'medium') {
+                riskCard.querySelector('.card-header').className = 'card-header bg-warning';
+            } else {
+                riskCard.querySelector('.card-header').className = 'card-header bg-success text-white';
+            }
+        }
+        
+        // 显示最终预测
+        function displayFinal(final) {
+            let html = '<div class="row">';
+            html += '<div class="col-md-6">';
+            html += '<h3>预测结果: <span class="text-success">' + final.prediction + '</span></h3>';
+            html += '<p class="lead">置信度: <strong>' + final.confidence.toFixed(1) + '%</strong>';
+            if (final.confidence_adjustment !== 0) {
+                html += '<br><small class="text-muted">原始置信度: ' + final.original_confidence.toFixed(1) + '% (调整: ' + (final.confidence_adjustment > 0 ? '+' : '') + final.confidence_adjustment + '%)</small>';
+            }
+            html += '</p>';
+            
+            html += '<table class="table table-sm">';
+            html += '<tr><td>主胜率</td><td><strong class="text-success">' + final.home_pct.toFixed(1) + '%</strong></td></tr>';
+            html += '<tr><td>平局率</td><td>' + final.draw_pct.toFixed(1) + '%</td></tr>';
+            html += '<tr><td>客胜率</td><td>' + final.away_pct.toFixed(1) + '%</td></tr>';
+            html += '<tr><td>样本量</td><td>' + final.total_matches + '场</td></tr>';
+            html += '</table>';
+            html += '</div>';
+            
+            html += '<div class="col-md-6">';
+            html += '<h6>⚽ 大小球分析</h6>';
+            html += '<table class="table table-sm">';
+            html += '<tr><td>大2.5球概率</td><td><strong>' + final.over_25_pct.toFixed(1) + '%</strong></td></tr>';
+            html += '<tr><td>平均总进球</td><td>' + final.avg_total_goals.toFixed(2) + '球</td></tr>';
+            html += '<tr><td>平均净胜球</td><td>' + final.avg_margin.toFixed(2) + '球</td></tr>';
+            html += '</table>';
+            html += '</div>';
+            html += '</div>';
+            
+            html += '<div class="row mt-3">';
+            html += '<div class="col-md-6">';
+            html += '<h6>🎯 推荐比分</h6>';
+            html += '<table class="table table-sm table-striped">';
+            html += '<tr><th>比分</th><th>场次</th></tr>';
+            for (const s of final.top_scores) {
+                html += '<tr><td><strong>' + s.home + '-' + s.away + '</strong></td><td>' + s.count + '场</td></tr>';
+            }
+            html += '</table>';
+            html += '</div>';
+            
+            html += '<div class="col-md-6">';
+            html += '<h6>📊 进球分布</h6>';
+            html += '<table class="table table-sm table-striped">';
+            html += '<tr><th>总进球</th><th>场次</th></tr>';
+            for (const g of final.goals_dist) {
+                html += '<tr><td><strong>' + g.goals + '球</strong></td><td>' + g.count + '场</td></tr>';
+            }
+            html += '</table>';
+            html += '</div>';
+            html += '</div>';
+            
+            document.getElementById('finalBody').innerHTML = html;
+        }
+        
+        // 显示步骤1
+        function displayStep1(step1) {
+            let html = '<table class="table table-sm table-striped">';
+            html += '<tr><th>层级</th><th>样本</th><th>主胜率</th><th>平局率</th><th>客胜率</th><th>净胜球分布</th></tr>';
+            for (const layer of step1.layers) {
+                html += '<tr>';
+                html += '<td>' + layer.name + '</td>';
+                html += '<td><strong>' + layer.total + '</strong>场</td>';
+                html += '<td><strong class="text-success">' + layer.home_pct.toFixed(1) + '%</strong></td>';
+                html += '<td>' + layer.draw_pct.toFixed(1) + '%</td>';
+                html += '<td>' + layer.away_pct.toFixed(1) + '%</td>';
+                html += '<td><small>1球:' + layer.win_1_pct.toFixed(0) + '% / 2球:' + layer.win_2_pct.toFixed(0) + '% / 3+球:' + layer.win_3plus_pct.toFixed(0) + '%</small></td>';
+                html += '</tr>';
+            }
+            html += '</table>';
+            document.getElementById('step1Body').innerHTML = html;
+        }
+        
+        // 显示步骤2
+        function displayStep2(step2) {
+            let html = '<table class="table table-sm table-striped">';
+            html += '<tr><th>分组</th><th>样本</th><th>主胜率</th><th>平局率</th><th>客胜率</th></tr>';
+            for (const group of step2.groups) {
+                html += '<tr>';
+                html += '<td>' + group.name + '</td>';
+                html += '<td><strong>' + group.total + '</strong>场</td>';
+                html += '<td><strong class="text-success">' + group.home_pct.toFixed(1) + '%</strong></td>';
+                html += '<td>' + group.draw_pct.toFixed(1) + '%</td>';
+                html += '<td>' + group.away_pct.toFixed(1) + '%</td>';
+                html += '</tr>';
+            }
+            html += '</table>';
+            document.getElementById('step2Body').innerHTML = html;
+        }
+        
+        // 显示步骤4
+        function displayStep4(step4) {
+            let html = '<p class="text-muted">目标杠杆率: <strong>B365 ' + step4.b365_target.toFixed(2) + '</strong> | <strong>WH ' + step4.wh_target.toFixed(2) + '</strong></p>';
+            
+            html += '<div class="row">';
+            html += '<div class="col-md-6">';
+            html += '<h6>B365杠杆率分层</h6>';
+            html += '<table class="table table-sm table-striped">';
+            html += '<tr><th>层级</th><th>范围</th><th>样本</th><th>主胜率</th></tr>';
+            for (const layer of step4.b365_layers) {
+                html += '<tr>';
+                html += '<td>' + layer.name + '</td>';
+                html += '<td><small>' + layer.leverage_range + '</small></td>';
+                html += '<td>' + layer.total + '场</td>';
+                html += '<td>' + layer.home_pct.toFixed(1) + '%</td>';
+                html += '</tr>';
+            }
+            html += '</table>';
+            html += '</div>';
+            
+            html += '<div class="col-md-6">';
+            html += '<h6>WH杠杆率分层</h6>';
+            html += '<table class="table table-sm table-striped">';
+            html += '<tr><th>层级</th><th>范围</th><th>样本</th><th>主胜率</th></tr>';
+            for (const layer of step4.wh_layers) {
+                html += '<tr>';
+                html += '<td>' + layer.name + '</td>';
+                html += '<td><small>' + layer.leverage_range + '</small></td>';
+                html += '<td>' + layer.total + '场</td>';
+                html += '<td>' + layer.home_pct.toFixed(1) + '%</td>';
+                html += '</tr>';
+            }
+            html += '</table>';
+            html += '</div>';
+            html += '</div>';
+            
+            document.getElementById('step4Body').innerHTML = html;
+        }
+        
+        // 显示步骤6
+        function displayStep6(step6) {
+            let html = '<div class="alert alert-info">';
+            html += '<strong>基础样本:</strong> ' + step6.base_sample.total + '场 (主胜' + step6.min_odds.toFixed(2) + '±0.03)<br>';
+            html += '<strong>主胜率:</strong> ' + step6.base_sample.home_pct.toFixed(1) + '% | ';
+            html += '<strong>爆冷率:</strong> <span class="text-warning">' + step6.base_sample.upset_pct.toFixed(1) + '%</span>';
+            html += '</div>';
+            
+            html += '<div class="row">';
+            html += '<div class="col-md-6">';
+            html += '<h6>平赔高发TOP 5</h6>';
+            html += '<table class="table table-sm table-striped">';
+            html += '<tr><th>平赔</th><th>平局场次</th></tr>';
+            for (const h of step6.draw_hotspots.slice(0, 5)) {
+                const isCurrent = Math.abs(h.draw_odds - step6.current_risk.current_draw) < 0.25;
+                html += '<tr>';
+                html += '<td>' + h.draw_odds.toFixed(2) + (isCurrent ? ' <span class="warning-badge">当前</span>' : '') + '</td>';
+                html += '<td>' + h.count + '场</td>';
+                html += '</tr>';
+            }
+            html += '</table>';
+            html += '</div>';
+            
+            html += '<div class="col-md-6">';
+            html += '<h6>客胜高发TOP 5</h6>';
+            html += '<table class="table table-sm table-striped">';
+            html += '<tr><th>客胜</th><th>客胜场次</th></tr>';
+            for (const h of step6.away_hotspots.slice(0, 5)) {
+                const isCurrent = Math.abs(h.away_odds - step6.current_risk.current_away) < 0.50;
+                html += '<tr>';
+                html += '<td>' + h.away_odds.toFixed(2) + (isCurrent ? ' <span class="warning-badge">当前</span>' : '') + '</td>';
+                html += '<td>' + h.count + '场</td>';
+                html += '</tr>';
+            }
+            html += '</table>';
+            html += '</div>';
+            html += '</div>';
+            
+            if (step6.current_risk.draw_in_hotspot || step6.current_risk.away_in_hotspot) {
+                html += '<div class="leverge-warning">';
+                html += '<h6>⚠️ 爆冷风险提示</h6>';
+                if (step6.current_risk.draw_in_hotspot) {
+                    html += '<p>• 当前平赔' + step6.current_risk.current_draw.toFixed(2) + '在高发范围内，平局风险较高</p>';
+                }
+                if (step6.current_risk.away_in_hotspot) {
+                    html += '<p>• 当前客胜' + step6.current_risk.current_away.toFixed(2) + '在高发范围内，客胜风险较高</p>';
+                }
+                html += '</div>';
+            }
+            
+            document.getElementById('step6Body').innerHTML = html;
+        }
+    </script>
+</body>
+</html>
